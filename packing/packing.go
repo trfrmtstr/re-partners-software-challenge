@@ -46,14 +46,14 @@ func totalPacks(sol Solution) int {
 //
 // If we assume that we know all solutions S(k) where k < n then we can assume one of 3 following scenarios:
 // 1. S(n) contains A pack, which means S(n) = S(n - A) + A
-// 2. S(n) contains B pack, which means S(n) = S(n - B) + A
-// 3. S(n) contains C pack, which means S(n) = S(n - C) + A
+// 2. S(n) contains B pack, which means S(n) = S(n - B) + B
+// 3. S(n) contains C pack, which means S(n) = S(n - C) + C
 //
 // Note that S(k) where k <= 0 is 0 since we don't need to ship anything if desired number of items is 0 or less than 0 (which even doesn't make any sense here).
 //
 // From above assumptions we'll just pick one which minimizes S(n) so:
 //
-// S(n) = MIN[S(n - A) + A, S(n - B) + B, S(n - A) + B]
+// S(n) = MIN[S(n - A) + A, S(n - B) + B, S(n - C) + C]
 //
 // Since 3rd rule of challenge prefers solutions with minimal number of packs if it happens that there exits multiple subsolutions that both have minimum number
 // of items we'll just pick one with minimum number of packs.
