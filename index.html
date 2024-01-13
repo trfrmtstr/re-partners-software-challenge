@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Optimal Packing</title>
+</head>
+<body>
+    <h1>Optimal Packing Calculator</h1>
+    <div>
+        <label for="packSizes">Pack Sizes (comma-separated):</label>
+        <input type="text" id="packSizes" placeholder="e.g.: 23, 31, 53">
+    </div>
+    <div>
+        <label for="numItems">Number of Items:</label>
+        <input type="number" id="numItems" placeholder="e.g.: 263">
+    </div>
+    <div>Hint: you can press enter while focused on inputs to invoke `Compute` button</div>
+    <button id="computeButton">Compute</button>
+    <div id="responseTable"></div>
+
+    <script>
+        function triggerComputeOnEnter(event) {
+            if (event.key === 'Enter') {
+                document.getElementById('computeButton').click();
+            }
+        }
+
+        // Add keypress event listeners to the input fields
+        document.getElementById('packSizes').addEventListener('keypress', triggerComputeOnEnter);
+        document.getElementById('numItems').addEventListener('keypress', triggerComputeOnEnter);
+
+        document.getElementById('computeButton').addEventListener('click', function() {
+            const pack_sizes = document.getElementById('packSizes').value.split(',').map(Number);
+            const num_items = parseInt(document.getElementById('numItems').value);
+
+            const body = { pack_sizes, num_items };
+
+            fetch('/find-optimal-packing', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
+            })
+            .then(response => response.json())
+            .then(data => {
+                createTable(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                document.getElementById('responseTable').textContent = `Inputs should be in following format: pack sizes should be comma separated integers ('23, 31, 53'), number of items should be integer ('263').\n{Error: ${error}}`;
+            });
+        });
+
+        function createTable(data) {
+            var table = document.createElement('table');
+            var thead = document.createElement('thead');
+            var tbody = document.createElement('tbody');
+            
+            // Create the header row
+            var headerRow = document.createElement('tr');
+            var headerPackSize = document.createElement('th');
+            headerPackSize.textContent = 'Pack Size';
+            var headerNumPacks = document.createElement('th');
+            headerNumPacks.textContent = 'Num of Packs';
+            headerRow.appendChild(headerPackSize);
+            headerRow.appendChild(headerNumPacks);
+            thead.appendChild(headerRow);
+            
+            // Add the table headers to the table
+            table.appendChild(thead);
+
+            // Create the table rows
+            Object.keys(data).forEach(function(key) {
+                var row = document.createElement('tr');
+                var cellPackSize = document.createElement('td');
+                cellPackSize.textContent = key;
+                var cellNumPacks = document.createElement('td');
+                cellNumPacks.textContent = data[key];
+                row.appendChild(cellPackSize);
+                row.appendChild(cellNumPacks);
+                tbody.appendChild(row);
+            });
+
+            // Add the table body to the table
+            table.appendChild(tbody);
+
+            // Append the table to the container
+            var container = document.getElementById('responseTable');
+            container.innerHTML = ''; // Clear any previous content
+            container.appendChild(table);
+        }
+    </script>
+</body>
+</html>
